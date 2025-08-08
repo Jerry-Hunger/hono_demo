@@ -1,6 +1,7 @@
 import type { ZodSchema } from 'zod'
 import type { ValidationTargets } from 'hono'
 import { zValidator as zv } from '@hono/zod-validator'
+import  HttpStatusCodes  from '@/constants/http-status-codes.js'
 
 interface ValidatorOptions {
   stopOnFirstError?: boolean
@@ -41,7 +42,7 @@ export function zValidator<T extends ZodSchema, Target extends keyof ValidationT
           message: 'Validation failed',
           errors: formattedErrors
         },
-        400
+        HttpStatusCodes.BAD_REQUEST
       )
     }
   })
