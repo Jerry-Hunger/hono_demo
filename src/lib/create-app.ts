@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { pinoLoggerMiddleware } from '@/middlewares/pino-logger.js'
 import type { AppHono } from '@/types/hono.js'
+import HttpStatusCodes from '@/constants/http-status-codes.js'
 
 export function createRouter(): AppHono {
   return new Hono({
@@ -14,7 +15,7 @@ export default function createApp() {
   app.use(pinoLoggerMiddleware)
 
   app.notFound((c) => {
-    return c.json({ message: 'Route Not Found' }, 404)
+    return c.json({ message: 'Route Not Found' }, HttpStatusCodes.NOT_FOUND)
   })
   return app
 }

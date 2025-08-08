@@ -1,4 +1,4 @@
-import { Hono } from 'hono'
+import type { Handler, Hono } from 'hono'
 import type { PinoLogger } from 'hono-pino'
 
 export type AppBindings = {
@@ -8,3 +8,5 @@ export type AppBindings = {
 }
 
 export type AppHono = Hono<AppBindings>
+
+export type AppHandler = Handler<AppBindings>
