@@ -1,7 +1,7 @@
 import type { ZodSchema } from 'zod'
 import type { ValidationTargets } from 'hono'
 import { zValidator as zv } from '@hono/zod-validator'
-import  HttpStatusCodes  from '@/constants/http-status-codes.js'
+import HttpStatusCodes from '@/constants/http-status-codes.js'
 
 interface ValidatorOptions {
   stopOnFirstError?: boolean
