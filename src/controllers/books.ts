@@ -1,6 +1,7 @@
 import HttpStatusCodes from '@/constants/http-status-codes.js'
 import type { createUserDto, updateUserDto } from '@/schemas/book.js'
-import type { AppHandler } from '@/types/hono.js'
+import type { Handler } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 interface Book {
   id: string
@@ -17,22 +18,24 @@ const books: Book[] = [
 // 用于生成自增id
 let nextId = books.length > 0 ? Math.max(...books.map((b) => Number(b.id))) + 1 : 1
 
-export const getBooks: AppHandler = (c) => {
+export const getBooks: Handler = (c) => {
   return c.json(books)
 }
 
-export const getBookById: AppHandler = (c) => {
+export const getBookById: Handler = (c) => {
   const { id } = c.req.param()
   const book = books.find((book) => book.id === id)
 
   if (!book) {
-    return c.json({ message: 'Book not found' }, HttpStatusCodes.NOT_FOUND)
+    throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
+      message: 'Book not found'
+    })
   }
 
   return c.json(book)
 }
 
-export const createBook: AppHandler = async (c) => {
+export const createBook: Handler = async (c) => {
   const { title, author }: createUserDto = await c.req.json()
   const book: Book = {
     id: String(nextId++),
@@ -43,13 +46,15 @@ export const createBook: AppHandler = async (c) => {
   return c.json(book)
 }
 
-export const updateBook: AppHandler = async (c) => {
+export const updateBook: Handler = async (c) => {
   const { id } = c.req.param()
   const { title, author }: updateUserDto = await c.req.json()
   const index = books.findIndex((book) => book.id === id)
 
   if (index === -1) {
-    return c.json({ message: 'Book not found' }, HttpStatusCodes.NOT_FOUND)
+    throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
+      message: 'Book not found'
+    })
   }
 
   books[index] = {
@@ -60,12 +65,14 @@ export const updateBook: AppHandler = async (c) => {
   return c.json(books[index])
 }
 
-export const deleteBook: AppHandler = async (c) => {
+export const deleteBook: Handler = async (c) => {
   const { id } = c.req.param()
   const index = books.findIndex((book) => book.id === id)
 
   if (index === -1) {
-    return c.json({ message: 'Book not found' }, HttpStatusCodes.NOT_FOUND)
+    throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
+      message: 'Book not found'
+    })
   }
 
   books.splice(index, 1)

@@ -2,6 +2,7 @@ import type { ZodSchema } from 'zod'
 import type { ValidationTargets } from 'hono'
 import { zValidator as zv } from '@hono/zod-validator'
 import HttpStatusCodes from '@/constants/http-status-codes.js'
+import { HTTPException } from 'hono/http-exception'
 
 interface ValidatorOptions {
   stopOnFirstError?: boolean
@@ -13,7 +14,7 @@ export function zValidator<T extends ZodSchema, Target extends keyof ValidationT
   schema: T,
   options: ValidatorOptions = {}
 ) {
-  return zv(target, schema, (result, c) => {
+  return zv(target, schema, (result) => {
     if (!result.success) {
       // 格式化zod的错误信息，返回结构化的错误数组
       let formattedErrors = result.error.issues.map((error) => ({
@@ -37,13 +38,10 @@ export function zValidator<T extends ZodSchema, Target extends keyof ValidationT
         formattedErrors = Array.from(fieldMap.values())
       }
 
-      return c.json(
-        {
-          message: 'Validation failed',
-          errors: formattedErrors
-        },
-        HttpStatusCodes.BAD_REQUEST
-      )
+      throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+        message: 'Validation failed',
+        cause: formattedErrors
+      })
     }
   })
 }
